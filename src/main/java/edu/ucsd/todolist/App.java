@@ -61,6 +61,11 @@ class Task extends HBox {
         return this.taskName;
     }
 
+    // custom method
+    public void setTaskName(String name){
+        taskName.setText(name);
+    }
+
     public Button getDoneButton() {
         return this.doneButton;
     }
@@ -78,6 +83,7 @@ class Task extends HBox {
         }
     }
 
+    // custom method
     @Override
     public String toString(){
         return taskName.getText();
@@ -174,8 +180,23 @@ class TaskList extends VBox {
 
 
         var tasks = getChildren();
-        Collections.sort(tasks, (task1, task2) -> task1.toString().compareTo(task2.toString()));
+        var taskNames = new ArrayList<String>(tasks.size());
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i) instanceof Task) {
+                var task = ((Task) tasks.get(i));
+                var name = task.toString();
+                taskNames.add(name);
+            }
+        }
         
+        Collections.sort(taskNames, (task1, task2) -> task1.toString().compareTo(task2.toString()));
+
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i) instanceof Task) {
+                var task = ((Task) tasks.get(i));
+                task.setTaskName(taskNames.get(i));
+            }
+        }
         System.out.println("tasks sorted successfully");
         //System.out.println("sorttasks() not implemented!");
 
