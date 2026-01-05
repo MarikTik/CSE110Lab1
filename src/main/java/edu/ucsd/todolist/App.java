@@ -144,9 +144,9 @@ class Footer extends HBox {
 
     private Button addButton;
     private Button clearButton;
-    // TODO: Add a button called "loadButton" to load tasks from file
-    // TODO: Add a button called "saveButton" to save tasks to a file
-    // TODO: Add a button called "sortButton" to sort the tasks lexicographically
+    private Button loadButton;
+    private Button saveButton;
+    private Button sortButton;
 
     Footer() {
         this.setPrefSize(500, 60);
@@ -161,10 +161,9 @@ class Footer extends HBox {
         clearButton = new Button("Clear finished"); // text displayed on clear tasks button
         clearButton.setStyle(defaultButtonStyle);
 
-        this.getChildren().addAll(addButton, clearButton); // adding buttons to footer
+        this.getChildren().addAll(addButton, clearButton, loadButton, saveButton, sortButton); // adding buttons to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
-
-        // TODO: Create loadButton, saveButton and sortButton to the footer
+	
     }
 
     public Button getAddButton() {
@@ -175,7 +174,17 @@ class Footer extends HBox {
         return clearButton;
     }
 
-    // TODO: Add getters for loadButton, saveButton and sortButton
+    public Button getLoadButton() {
+        return loadButton;
+    }
+
+    public Button getSaveButton() {
+        return saveButton;
+    }
+
+    public Button getSortButton() {
+        return sortButton;
+    }
 }
 
 class Header extends HBox {
@@ -199,6 +208,10 @@ class AppFrame extends BorderPane{
 
     private Button addButton;
     private Button clearButton;
+    private Button loadButton;
+    private Button saveButton;
+    private Button loadButton;
+    
 
     AppFrame()
     {
@@ -227,6 +240,9 @@ class AppFrame extends BorderPane{
         // Initialise Button Variables through the getters in Footer
         addButton = footer.getAddButton();
         clearButton = footer.getClearButton();
+	loadButton = footer.getLoadButton();
+	saveButton = footer.getSaveButton();
+	sortButton = footer.getSortButton();
 
         // Call Event Listeners for the Buttons
         addListeners();
@@ -255,7 +271,25 @@ class AppFrame extends BorderPane{
         clearButton.setOnAction(e -> {
             taskList.removeCompletedTasks();
         });
-    }
+
+	loadButton.setOnAction(e -> {
+	    loadTasks();
+	    ArrayList<Task> all = taskList.getChildren();
+	    for (Task t : all) {
+		Button doneButton = t.getDoneButton();
+		doneButton.setOnAction(e -> {
+		    t.toggleDone();
+		});
+	    }
+    	});
+
+	saveButton.setOnAction(e -> {
+	    saveTasks();
+    	});
+
+	sortButton.setOnAction(e -> {
+	    sortTasks();
+    	});
 }
 
 public class App extends Application {
