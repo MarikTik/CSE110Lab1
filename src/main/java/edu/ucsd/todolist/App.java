@@ -77,6 +77,11 @@ class Task extends HBox {
             this.getChildren().get(i).setStyle("-fx-background-color: #BCE29E; -fx-border-width: 0;"); // change color of task to green
         }
     }
+
+    @Override
+    public String toString(){
+        return taskName.getText();
+    }
 }
 
 class TaskList extends VBox {
@@ -111,8 +116,24 @@ class TaskList extends VBox {
         // hint 1: use try-catch block
         // hint 2: use BufferedReader and FileReader
         // hint 3: task.getTaskName().setText() sets the text of the task
+        String path = "tasks.txt";
+        try(var fr = new FileReader(path)){
+            var br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null){
+                System.out.println(line);
+                Task task = new Task();
+                task.getTaskName().setText(line);
+                var tasks = getChildren();
+                tasks.add(task);
 
-        System.out.println("loadtasks() not implemented!");
+            }
+        }   
+        catch(IOException ex){
+            System.out.println("An error occurred while loading tasks: " + ex.getMessage());
+        }
+        updateTaskIndices();
+        System.out.println("tasks loaded from tasks.txt");
     }
 
     // TODO: Complete this method
@@ -123,8 +144,23 @@ class TaskList extends VBox {
         // hint 1: use try-catch block
         // hint 2: use FileWriter
         // hint 3: this.getChildren() gets the list of tasks
-
-        System.out.println("savetasks() not implemented!");
+        String path = "tasks.txt";
+        try(var fw = new FileWriter(path)){
+            var bw = new BufferedWriter(fw);
+            var tasks = getChildren();
+            for (int i = 0; i < tasks.size(); i++) {
+                if (tasks.get(i) instanceof Task) {
+                    var task = ((Task) tasks.get(i));
+                    var name = task.toString();
+                    bw.write(name);
+                    bw.newLine();
+                }
+            }
+        }
+        catch(IOException ex){
+            System.out.println("An error occurred while saving tasks: " + ex.getMessage());
+        }
+        System.out.println("tasks saved to tasks.txt");
     }
 
     // TODO: Complete this method
@@ -136,7 +172,13 @@ class TaskList extends VBox {
         // hint 2: Collections.sort() can be used to sort the tasks
         // hint 3: task.getTaskName().setText() sets the text of the task
 
-         System.out.println("sorttasks() not implemented!");
+
+        var tasks = getChildren();
+        Collections.sort(tasks, (task1, task2) -> task1.toString().compareTo(task2.toString()));
+        
+        System.out.println("tasks sorted successfully");
+        //System.out.println("sorttasks() not implemented!");
+
     }
 }
 
