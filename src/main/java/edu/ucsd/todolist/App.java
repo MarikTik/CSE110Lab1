@@ -61,6 +61,11 @@ class Task extends HBox {
         return this.taskName;
     }
 
+    // custom method
+    public void setTaskName(String name){
+        taskName.setText(name);
+    }
+
     public Button getDoneButton() {
         return this.doneButton;
     }
@@ -76,6 +81,12 @@ class Task extends HBox {
         for (int i = 0; i < this.getChildren().size(); i++) {
             this.getChildren().get(i).setStyle("-fx-background-color: #BCE29E; -fx-border-width: 0;"); // change color of task to green
         }
+    }
+
+    // custom method
+    @Override
+    public String toString(){
+        return taskName.getText();
     }
 }
 
@@ -111,8 +122,24 @@ class TaskList extends VBox {
         // hint 1: use try-catch block
         // hint 2: use BufferedReader and FileReader
         // hint 3: task.getTaskName().setText() sets the text of the task
+        String path = "tasks.txt";
+        try(var fr = new FileReader(path);  var br = new BufferedReader(fr)){
+           
+            String line;
+            while ((line = br.readLine()) != null){
+                System.out.println(line);
+                Task task = new Task();
+                task.getTaskName().setText(line);
+                var tasks = getChildren();
+                tasks.add(task);
 
-        System.out.println("loadtasks() not implemented!");
+            }
+        }   
+        catch(IOException ex){
+            System.out.println("An error occurred while loading tasks: " + ex.getMessage());
+        }
+        updateTaskIndices();
+        System.out.println("tasks loaded from tasks.txt");
     }
 
     // TODO: Complete this method
@@ -123,8 +150,23 @@ class TaskList extends VBox {
         // hint 1: use try-catch block
         // hint 2: use FileWriter
         // hint 3: this.getChildren() gets the list of tasks
-
-        System.out.println("savetasks() not implemented!");
+        String path = "tasks.txt";
+        try(var fw = new FileWriter(path); var bw = new BufferedWriter(fw)){
+            var tasks = getChildren();
+            for (int i = 0; i < tasks.size(); i++) {
+                if (tasks.get(i) instanceof Task) {
+                    var task = ((Task) tasks.get(i));
+                    var name = task.toString();
+                    System.out.println("task " + i + " " + name);
+                    bw.write(name);
+                    bw.newLine();
+                }
+            }
+        }
+        catch(IOException ex){
+            System.out.println("An error occurred while saving tasks: " + ex.getMessage());
+        }
+        System.out.println("tasks saved to tasks.txt");
     }
 
     // TODO: Complete this method
@@ -136,7 +178,28 @@ class TaskList extends VBox {
         // hint 2: Collections.sort() can be used to sort the tasks
         // hint 3: task.getTaskName().setText() sets the text of the task
 
-         System.out.println("sorttasks() not implemented!");
+
+        var tasks = getChildren();
+        var taskNames = new ArrayList<String>(tasks.size());
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i) instanceof Task) {
+                var task = ((Task) tasks.get(i));
+                var name = task.toString();
+                taskNames.add(name);
+            }
+        }
+        
+        Collections.sort(taskNames, (task1, task2) -> task1.toString().compareTo(task2.toString()));
+
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i) instanceof Task) {
+                var task = ((Task) tasks.get(i));
+                task.setTaskName(taskNames.get(i));
+            }
+        }
+        System.out.println("tasks sorted successfully");
+        //System.out.println("sorttasks() not implemented!");
+
     }
 }
 
@@ -144,9 +207,9 @@ class Footer extends HBox {
 
     private Button addButton;
     private Button clearButton;
-    // TODO: Add a button called "loadButton" to load tasks from file
-    // TODO: Add a button called "saveButton" to save tasks to a file
-    // TODO: Add a button called "sortButton" to sort the tasks lexicographically
+    private Button loadButton;
+    private Button saveButton;
+    private Button sortButton;
 
     Footer() {
         this.setPrefSize(500, 60);
@@ -160,11 +223,16 @@ class Footer extends HBox {
         addButton.setStyle(defaultButtonStyle); // styling the button
         clearButton = new Button("Clear finished"); // text displayed on clear tasks button
         clearButton.setStyle(defaultButtonStyle);
+        loadButton = new Button("Load");
+        saveButton = new Button ("Save");
+        sortButton = new Button("Sort");
+        loadButton.setStyle(defaultButtonStyle);
+        saveButton.setStyle(defaultButtonStyle);
+        sortButton.setStyle(defaultButtonStyle);
 
-        this.getChildren().addAll(addButton, clearButton); // adding buttons to footer
+        this.getChildren().addAll(addButton, clearButton, loadButton, saveButton, sortButton); // adding buttons to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
-
-        // TODO: Create loadButton, saveButton and sortButton to the footer
+	
     }
 
     public Button getAddButton() {
@@ -175,7 +243,17 @@ class Footer extends HBox {
         return clearButton;
     }
 
-    // TODO: Add getters for loadButton, saveButton and sortButton
+    public Button getLoadButton() {
+        return loadButton;
+    }
+
+    public Button getSaveButton() {
+        return saveButton;
+    }
+
+    public Button getSortButton() {
+        return sortButton;
+    }
 }
 
 class Header extends HBox {
@@ -199,6 +277,10 @@ class AppFrame extends BorderPane{
 
     private Button addButton;
     private Button clearButton;
+    private Button loadButton;
+    private Button saveButton;
+    private Button sortButton;
+    
 
     AppFrame()
     {
@@ -227,6 +309,9 @@ class AppFrame extends BorderPane{
         // Initialise Button Variables through the getters in Footer
         addButton = footer.getAddButton();
         clearButton = footer.getClearButton();
+	loadButton = footer.getLoadButton();
+	saveButton = footer.getSaveButton();
+	sortButton = footer.getSortButton();
 
         // Call Event Listeners for the Buttons
         addListeners();
@@ -255,7 +340,26 @@ class AppFrame extends BorderPane{
         clearButton.setOnAction(e -> {
             taskList.removeCompletedTasks();
         });
-    }
+
+	loadButton.setOnAction(e -> {
+	    taskList.loadTasks();
+        for (int i = 0; i < taskList.getChildren().size(); i++) {
+            Task t = ((Task)taskList.getChildren().get(i));
+            Button doneButton = t.getDoneButton();
+            doneButton.setOnAction(e2 -> {
+                t.toggleDone();
+            });
+        }
+    	});
+
+	saveButton.setOnAction(e -> {
+	    taskList.saveTasks();
+    	});
+
+	sortButton.setOnAction(e -> {
+	    taskList.sortTasks();
+    	});
+}
 }
 
 public class App extends Application {
