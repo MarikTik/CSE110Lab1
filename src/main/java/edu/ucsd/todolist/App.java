@@ -123,8 +123,8 @@ class TaskList extends VBox {
         // hint 2: use BufferedReader and FileReader
         // hint 3: task.getTaskName().setText() sets the text of the task
         String path = "tasks.txt";
-        try(var fr = new FileReader(path)){
-            var br = new BufferedReader(fr);
+        try(var fr = new FileReader(path);  var br = new BufferedReader(fr)){
+           
             String line;
             while ((line = br.readLine()) != null){
                 System.out.println(line);
@@ -151,13 +151,13 @@ class TaskList extends VBox {
         // hint 2: use FileWriter
         // hint 3: this.getChildren() gets the list of tasks
         String path = "tasks.txt";
-        try(var fw = new FileWriter(path)){
-            var bw = new BufferedWriter(fw);
+        try(var fw = new FileWriter(path); var bw = new BufferedWriter(fw)){
             var tasks = getChildren();
             for (int i = 0; i < tasks.size(); i++) {
                 if (tasks.get(i) instanceof Task) {
                     var task = ((Task) tasks.get(i));
                     var name = task.toString();
+                    System.out.println("task " + i + " " + name);
                     bw.write(name);
                     bw.newLine();
                 }
