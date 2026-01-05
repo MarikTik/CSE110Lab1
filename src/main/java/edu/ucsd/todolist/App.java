@@ -83,6 +83,14 @@ class Task extends HBox {
         }
     }
 
+    public void untoggleDone(){
+        markedDone = false;
+        this.setStyle(getAccessibleHelp());
+        for (int i = 0; i < this.getChildren().size(); i++) {
+            this.getChildren().get(i).setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // change color of task to green
+        }
+    }
+
     // custom method
     @Override
     public String toString(){
@@ -95,7 +103,7 @@ class TaskList extends VBox {
     TaskList() {
         this.setSpacing(5); // sets spacing between tasks
         this.setPrefSize(500, 560);
-        this.setStyle("-fx-background-color: #F0F8FF;");
+        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
     }
 
     public void updateTaskIndices() {
@@ -330,7 +338,9 @@ class AppFrame extends BorderPane{
             Button doneButton = task.getDoneButton();
             doneButton.setOnAction(e1 -> {
                 // Call toggleDone on click
-                task.toggleDone();
+                if (task.isMarkedDone())
+                    task.untoggleDone();
+                else task.toggleDone();
             });
             // Update task indices
             taskList.updateTaskIndices();
