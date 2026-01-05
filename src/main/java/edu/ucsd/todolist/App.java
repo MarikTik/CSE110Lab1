@@ -160,6 +160,12 @@ class Footer extends HBox {
         addButton.setStyle(defaultButtonStyle); // styling the button
         clearButton = new Button("Clear finished"); // text displayed on clear tasks button
         clearButton.setStyle(defaultButtonStyle);
+        loadButton = new Button("Load");
+        saveButton = new Button ("Save");
+        sortButton = new Button("Sort");
+        loadButton.setStyle(defaultButtonStyle);
+        saveButton.setStyle(defaultButtonStyle);
+        sortButton.setStyle(defaultButtonStyle);
 
         this.getChildren().addAll(addButton, clearButton, loadButton, saveButton, sortButton); // adding buttons to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
@@ -210,7 +216,7 @@ class AppFrame extends BorderPane{
     private Button clearButton;
     private Button loadButton;
     private Button saveButton;
-    private Button loadButton;
+    private Button sortButton;
     
 
     AppFrame()
@@ -273,23 +279,24 @@ class AppFrame extends BorderPane{
         });
 
 	loadButton.setOnAction(e -> {
-	    loadTasks();
-	    ArrayList<Task> all = taskList.getChildren();
-	    for (Task t : all) {
-		Button doneButton = t.getDoneButton();
-		doneButton.setOnAction(e -> {
-		    t.toggleDone();
-		});
-	    }
+	    taskList.loadTasks();
+        for (int i = 0; i < taskList.getChildren().size(); i++) {
+            Task t = ((Task)taskList.getChildren().get(i));
+            Button doneButton = t.getDoneButton();
+            doneButton.setOnAction(e2 -> {
+                t.toggleDone();
+            });
+        }
     	});
 
 	saveButton.setOnAction(e -> {
-	    saveTasks();
+	    taskList.saveTasks();
     	});
 
 	sortButton.setOnAction(e -> {
-	    sortTasks();
+	    taskList.sortTasks();
     	});
+}
 }
 
 public class App extends Application {
