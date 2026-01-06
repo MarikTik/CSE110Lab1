@@ -113,7 +113,6 @@ class TaskList extends VBox {
         this.updateTaskIndices();
     }
 
-    // TODO: Complete this method
     /*
      * Load tasks from a file called "tasks.txt"
      * Add the tasks to the children of tasklist component
@@ -142,7 +141,6 @@ class TaskList extends VBox {
         System.out.println("tasks loaded from tasks.txt");
     }
 
-    // TODO: Complete this method
     /*
      * Save tasks to a file called "tasks.txt"
      */
@@ -169,7 +167,6 @@ class TaskList extends VBox {
         System.out.println("tasks saved to tasks.txt");
     }
 
-    // TODO: Complete this method
     /*
      * Sort the tasks lexicographically
      */
@@ -274,6 +271,7 @@ class AppFrame extends BorderPane{
     private Header header;
     private Footer footer;
     private TaskList taskList;
+    private ScrollPane scroller;
 
     private Button addButton;
     private Button clearButton;
@@ -293,7 +291,11 @@ class AppFrame extends BorderPane{
         // Initialise the Footer Object
         footer = new Footer();
 
+        
         // TODO: Add a Scroller to the Task List
+        scroller = new ScrollPane(taskList);
+        scroller.setFitToHeight(true);
+        scroller.setFitToWidth(true);
         // hint 1: ScrollPane() is the Pane Layout used to add a scroller - it will take the tasklist as a parameter
         // hint 2: setFitToWidth, and setFitToHeight attributes are used for setting width and height
         // hint 3: The center of the AppFrame layout should be the scroller window instead  of tasklist
@@ -302,7 +304,7 @@ class AppFrame extends BorderPane{
         // Add header to the top of the BorderPane
         this.setTop(header);
         // Add scroller to the centre of the BorderPane
-        this.setCenter(taskList);
+        this.setCenter(scroller);
         // Add footer to the bottom of the BorderPane
         this.setBottom(footer);
 
